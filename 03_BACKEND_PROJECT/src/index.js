@@ -18,7 +18,8 @@ Dotenv.config(
 conncectDB()
 .then(()=>{
     app.listen(process.env.PORT || 4000,()=>{
-
+        console.log("server is running at ",process.env.PORT);
+        
         console.log("DATABASE CONNECTED!!!")
     })}
     
