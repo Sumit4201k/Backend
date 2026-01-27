@@ -25,7 +25,7 @@ const UploadFile =async (Localfile) => {
         return CLoudupload
         
      } catch (error) {
-        fs.unlinkSync(Localfile)
+        fs.unlinkSync(Localfile)//remove locally uploaded file 
      }
 }
 

@@ -9,3 +9,5 @@ class apiResponse {
         //<400 because the standarad approch for error info sending is less than 400
     }
 }
+
+export {apiResponse}
