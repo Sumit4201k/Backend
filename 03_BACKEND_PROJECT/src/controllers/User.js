@@ -1,4 +1,6 @@
 import { asyncyHandler } from "../utils/asyncHandler.js";
+import {apierror} from "../utils/apierror.js"
+import {User} from '../models/user.model.js'
 
 const registerUser = asyncyHandler(async (req,res)=>{
     //step to make user
@@ -13,8 +15,33 @@ const registerUser = asyncyHandler(async (req,res)=>{
         //return res
 
 
-        const{fullName,email,username,password}=req.body()//when data is coming from bod(from form,json)
-        console.log("email",email);
+        const{Fullname,Email,username,password}=req.body//when data is coming from bod(from form,json)
+        console.log("email",Email);
+
+        // if (Fullname === "") {
+        //     throw new apierror(400,"full name is required")
+        // }
+//FIRST STEP VALIDATAION
+
+        if (
+            [Fullname,Email,username,password].some((feild)=>feild?.trim()==="")
+                
+            
+        ) {
+            throw new apierror(400,"all fields are neccecary")
+        }
+
+
+//SECOND STEP IF USER EXISTS
+       const Existeduser = User.findOne({
+            $or:[ {username} , {Email} ]
+        })  //returns the first match
+
+        if (Existeduser) {
+            throw new apierror(400,"username and email already exist")
+        }
+
+//THIRD STEP TAKE AVATAR AND COVER IMAGE
         
     res.status(200).json({
         message:"User server is working"
