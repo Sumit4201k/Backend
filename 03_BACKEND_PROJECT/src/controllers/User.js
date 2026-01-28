@@ -1,6 +1,8 @@
 import { asyncyHandler } from "../utils/asyncHandler.js";
 import {apierror} from "../utils/apierror.js"
 import {User} from '../models/user.model.js'
+import {UploadFile} from '../utils/cloudinary.js'
+import {apiResponse} from '../utils/apiResponse.js'
 
 const registerUser = asyncyHandler(async (req,res)=>{
     //step to make user
@@ -42,10 +44,50 @@ const registerUser = asyncyHandler(async (req,res)=>{
         }
 
 //THIRD STEP TAKE AVATAR AND COVER IMAGE
-        
-    res.status(200).json({
-        message:"User server is working"
-    })
+       const avatarLocal= req.files?.avatar[0]?.path      //files is from multer 
+       const coverimageLocal= req.files?.coverimage[0]?.path      //files is from multer 
+
+       if (!avatarLocal) {
+        throw new apierror(400,"avatar is required")
+       }
+
+//STEP FOUR UPLOAD IN CLODINARY
+     const avatar =  await UploadFile(avatarLocal)
+     const Coverimage = await UploadFile(coverimageLocal)
+
+     if (!avatar) {
+        throw new apierror(400,"avatar is required")
+     }
+
+//STEPFIVE USER CREATION IN DATABASE
+    const user= await User.create({
+        Fullname,
+        avatar: avatar.url,
+        coverimage: Coverimage?.url || ""  ,//if there is a cover image then create else leave it empty
+        Email,
+        password,
+        username:username.toLowerCase()
+     })
+//STEP FIVE OF REMOVING TTHE REF TOCKEN AND PASSSWORD
+     const Createduser= await User.findById(user._id)
+     /*select method is used to select
+    feilds that we want (this mthd selects 
+    all of the feilds we have to un slect the
+    feild we dont want) by using - and space*/ 
+     .select(
+        "-password -refreshTocken"
+    )
+    if(!Createduser){
+        throw new apierror(500,"server error while registring the user")
+    }
+//STEP SICTH RESPOSE WITH THE USER
+
+
+
+    res.status(200).json(
+       new apiResponse(200,Createduser,"user created")
+    )
+
 })
 
 export default registerUser
