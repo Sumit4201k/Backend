@@ -22,8 +22,8 @@ const UploadFile =async (Localfile) => {
         //clodinary is used here
         console.log("file uploaded scsfuly ",CLoudupload.url);
 
+        fs.unlinkSync(Localfile)
         return CLoudupload
-        
      } catch (error) {
         fs.unlinkSync(Localfile)//remove locally uploaded file 
      }

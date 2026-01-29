@@ -19,7 +19,8 @@ const registerUser = asyncyHandler(async (req,res)=>{
 
         const{Fullname,Email,username,password}=req.body//when data is coming from bod(from form,json)
         console.log("email",Email);
-
+        console.log("req BODY:  ",req.body);
+        
         // if (Fullname === "") {
         //     throw new apierror(400,"full name is required")
         // }
@@ -35,7 +36,7 @@ const registerUser = asyncyHandler(async (req,res)=>{
 
 
 //SECOND STEP IF USER EXISTS
-       const Existeduser = User.findOne({
+       const Existeduser =await User.findOne({
             $or:[ {username} , {Email} ]
         })  //returns the first match
 
@@ -46,7 +47,8 @@ const registerUser = asyncyHandler(async (req,res)=>{
 //THIRD STEP TAKE AVATAR AND COVER IMAGE
        const avatarLocal= req.files?.avatar[0]?.path      //files is from multer 
        const coverimageLocal= req.files?.coverimage[0]?.path      //files is from multer 
-
+        console.log("req FILES:  ",req.files);
+        
        if (!avatarLocal) {
         throw new apierror(400,"avatar is required")
        }
