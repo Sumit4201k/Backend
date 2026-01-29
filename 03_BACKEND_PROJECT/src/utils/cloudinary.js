@@ -21,7 +21,8 @@ const UploadFile =async (Localfile) => {
         })
         //clodinary is used here
         console.log("file uploaded scsfuly ",CLoudupload.url);
-
+        console.log("CLODINERY RES:  ",CLoudupload);
+        
         fs.unlinkSync(Localfile)
         return CLoudupload
      } catch (error) {

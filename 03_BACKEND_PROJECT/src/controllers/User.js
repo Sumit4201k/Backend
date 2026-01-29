@@ -46,7 +46,12 @@ const registerUser = asyncyHandler(async (req,res)=>{
 
 //THIRD STEP TAKE AVATAR AND COVER IMAGE
        const avatarLocal= req.files?.avatar[0]?.path      //files is from multer 
-       const coverimageLocal= req.files?.coverimage[0]?.path      //files is from multer 
+       let coverimageLocal      //files is from multer 
+
+       if (req.files && Array.isArray(req.files.coverimage)  &&  req.files.coverimage.length > 0) {
+        coverimageLocal = req.files.coverimage[0].path 
+       }
+       
         console.log("req FILES:  ",req.files);
         
        if (!avatarLocal) {
@@ -82,7 +87,7 @@ const registerUser = asyncyHandler(async (req,res)=>{
     if(!Createduser){
         throw new apierror(500,"server error while registring the user")
     }
-//STEP SICTH RESPOSE WITH THE USER
+//STEP SIXTH RESPOSE WITH THE USER
 
 
 
