@@ -4,6 +4,26 @@ import {User} from '../models/user.model.js'
 import {UploadFile} from '../utils/cloudinary.js'
 import {apiResponse} from '../utils/apiResponse.js'
 
+
+const generateAccestockenandRefreshtocken= async(userId)=>{
+
+      try {
+        const user = await User.findById(userId)
+
+        const RefreshTocken = user.generateRefreshtoken()
+       const AccesTocken =  user.generateAccesstoken()
+
+       user.refreshTocken = RefreshTocken
+       await user.save({validateBeforeSave:false})
+
+        return {RefreshTocken , AccesTocken}
+
+      } catch (error) {
+        
+        throw new apierror(400,"something wrong in ACCTKN and REFTKN fetching")
+      }  
+}
+
 const registerUser = asyncyHandler(async (req,res)=>{
     //step to make user
         //get user detail from fronend
@@ -102,24 +122,7 @@ const registerUser = asyncyHandler(async (req,res)=>{
 //LOGIN
 
 
-const generateAccestockenandRefreshtocken= async(userId)=>{
-
-      try {
-        const user = await User.findOne(userId)
-
-        const RefreshTocken = user.generateRefreshtoken()
-       const AccesTocken =  user.generateAccesstoken()
-
-       user.refreshTocken = RefreshTocken
-       await user.save({validateBeforesave:false})
-
-        return {RefreshTocken , AccesTocken}
-
-      } catch (error) {
-        
-        throw new apierror(400,"something wrong in ACCTKN and REFTKN fetching")
-      }  
-}   
+   
 
 
 const loginUser=asyncyHandler(async (req,res)=>{
@@ -132,8 +135,10 @@ const loginUser=asyncyHandler(async (req,res)=>{
 
 const {Email,username,password}=req.body
 
-    if (!username|| !Email){
-        throw new apierror(400,"username or password reqired")
+    if (!username && !Email)
+    // if (!(username || Email ))
+        {
+        throw new apierror(400,"username or password reqired ")
     }
 
     const user =await User.findOne({
@@ -147,14 +152,14 @@ const {Email,username,password}=req.body
 
     /* the user here is THE INSTACE OF THE USER I GOT FROM 
     THE DATA BASE */
-    const Userpassword  =  user.isPasswordcorrect(password)
+    const Userpassword  = await user.isPasswordcorrect(password)
 
     if (!Userpassword) {
         throw new apierror(400,"incorrect password")
 
     }
 
-   const {refreshTocken , AccesTocken } =await generateAccestockenandRefreshtocken(user._id)
+   const {RefreshTocken , AccesTocken } =await generateAccestockenandRefreshtocken(user._id)
 
    const logeddinUser = await User.findById(user._id).select(
     "-password -refreshTocken"
@@ -162,18 +167,18 @@ const {Email,username,password}=req.body
   
    const option = {
     httpOnly:true,
-    secure:true
+    secure:false
    }
 
    return res
    .status(200)
-   .cookie("acessTocken",AccesTocken,option)
-   .cookie("refreshTocken",refreshTocken,option)
+   .cookie("AccesTocken",AccesTocken,option)
+   .cookie("RefreshTocken",RefreshTocken,option)
    .json(
     new apiResponse(
         200,
         {
-            user:logeddinUser,AccesTocken,refreshTocken
+            user:logeddinUser, RefreshTocken, AccesTocken
         },
         "User logged in sucessfully"
     )
@@ -186,7 +191,7 @@ const Userlogout = asyncyHandler( async (req,res) => {
     await User.findByIdAndUpdate(req.user._id,
         {
             $set:{
-                refreshTocken:undefined
+                RefreshTocken:undefined
 
             }
         },
@@ -197,12 +202,12 @@ const Userlogout = asyncyHandler( async (req,res) => {
 
     const option = {
     httpOnly:true,
-    secure:true
+    secure:false
    }
 
-   return req.status(200)
-   .clearCookie("acessTocken",option)
-   .clearCookie("refreshTocken",option)
+   return res.status(200)
+   .clearCookie("AccesTocken",option)
+   .clearCookie("RefreshTocken",option)
    .json(
     new apiResponse(200,{},"user LOGGED OUT ")
    )

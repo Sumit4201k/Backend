@@ -1,6 +1,6 @@
-import { User } from "../models/user.model";
-import { apierror } from "../utils/apierror";
-import { asyncyHandler } from "../utils/asyncHandler";
+import { User } from "../models/user.model.js";
+import { apierror } from "../utils/apierror.js";
+import { asyncyHandler } from "../utils/asyncHandler.js";
 import  Jwt  from "jsonwebtoken";
 
 export const varifyJwt = asyncyHandler(async(req, _,next)=>{
@@ -9,10 +9,11 @@ export const varifyJwt = asyncyHandler(async(req, _,next)=>{
       //REQUEST have cookie acccces 
       // that is coming from user module because 
       // the midle ware used in app.js file called cookie praser
-     const Tocken = req.cookie?.acessTocken || req.header("Authorization")?.replace("Bearer ","") 
+     const Tocken = req.cookies?.AccesTocken || req.header("Authorization")?.replace("Bearer ","") 
        //Authorization: Bearer <token>
        //   (this is used in mobile cookie while givig tocken) 
-  
+        console.log("tocken is ",Tocken);
+        
       if (!Tocken) {
           throw new apierror(401,"error in auth")
       }
