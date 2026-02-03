@@ -95,6 +95,120 @@ const registerUser = asyncyHandler(async (req,res)=>{
        new apiResponse(200,Createduser,"user created")
     )
 
+    
 })
 
-export default registerUser
+
+//LOGIN
+
+
+const generateAccestockenandRefreshtocken= async(userId)=>{
+
+      try {
+        const user = await User.findOne(userId)
+
+        const RefreshTocken = user.generateRefreshtoken()
+       const AccesTocken =  user.generateAccesstoken()
+
+       user.refreshTocken = RefreshTocken
+       await user.save({validateBeforesave:false})
+
+        return {RefreshTocken , AccesTocken}
+
+      } catch (error) {
+        
+        throw new apierror(400,"something wrong in ACCTKN and REFTKN fetching")
+      }  
+}   
+
+
+const loginUser=asyncyHandler(async (req,res)=>{
+//get a req- body
+//validate that response
+// compare user with data
+// compare pass
+//give acccces token end ref tocken 
+// give user details
+
+const {Email,username,password}=req.body
+
+    if (!username|| !Email){
+        throw new apierror(400,"username or password reqired")
+    }
+
+    const user =await User.findOne({
+        $or:[{username},{Email}] //$or operator is frm momgo DB data base
+    })
+
+    if (!user)//instace of user from data base
+     {
+        throw new apierror(400,"User not found")
+    }
+
+    /* the user here is THE INSTACE OF THE USER I GOT FROM 
+    THE DATA BASE */
+    const Userpassword  =  user.isPasswordcorrect(password)
+
+    if (!Userpassword) {
+        throw new apierror(400,"incorrect password")
+
+    }
+
+   const {refreshTocken , AccesTocken } =await generateAccestockenandRefreshtocken(user._id)
+
+   const logeddinUser = await User.findById(user._id).select(
+    "-password -refreshTocken"
+   )
+  
+   const option = {
+    httpOnly:true,
+    secure:true
+   }
+
+   return res
+   .status(200)
+   .cookie("acessTocken",AccesTocken,option)
+   .cookie("refreshTocken",refreshTocken,option)
+   .json(
+    new apiResponse(
+        200,
+        {
+            user:logeddinUser,AccesTocken,refreshTocken
+        },
+        "User logged in sucessfully"
+    )
+   )
+
+})
+
+const Userlogout = asyncyHandler( async (req,res) => {
+      
+    await User.findByIdAndUpdate(req.user._id,
+        {
+            $set:{
+                refreshTocken:undefined
+
+            }
+        },
+        {
+            new:true
+        }
+    )
+
+    const option = {
+    httpOnly:true,
+    secure:true
+   }
+
+   return req.status(200)
+   .clearCookie("acessTocken",option)
+   .clearCookie("refreshTocken",option)
+   .json(
+    new apiResponse(200,{},"user LOGGED OUT ")
+   )
+
+} )
+
+
+
+export {registerUser,loginUser,Userlogout}
