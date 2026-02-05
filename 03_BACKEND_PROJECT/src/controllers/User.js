@@ -3,6 +3,7 @@ import {apierror} from "../utils/apierror.js"
 import {User} from '../models/user.model.js'
 import {UploadFile} from '../utils/cloudinary.js'
 import {apiResponse} from '../utils/apiResponse.js'
+import jwt  from "jsonwebtoken";
 
 
 const generateAccestockenandRefreshtocken= async(userId)=>{
@@ -215,5 +216,53 @@ const Userlogout = asyncyHandler( async (req,res) => {
 } )
 
 
+const newAccestoken = asyncyHandler(async(req,res)=>{
 
-export {registerUser,loginUser,Userlogout}
+    const IncomingRefToken = req.cookies.RefreshTocken || req.body.RefreshTocken //REFRESHTOKEN IS LONGLIVED
+    // we are getting Encoded token here we need to decoded 
+
+   try {
+     if (!IncomingRefToken) {
+         throw new apierror(400,"problem in incoming ref tocken")
+     }
+      
+     const DecodedToken = jwt.verify(IncomingRefToken , process.env.REFRESH_TOKEN)
+     //Token decoded here
+ 
+     const user = await User.findById( DecodedToken?._id)
+ 
+     if (!user) {
+         throw new apierror(400,"problem in user ref tocken")
+     }
+ 
+     if ( IncomingRefToken !== user?.refreshTocken) //ref token name from the mopdel that is saved in database
+         {
+         throw new apierror(400, "Incomingref and userref is not matched")
+     }
+ 
+     const {newRefreshTocken , AccesTocken } = await generateAccestockenandRefreshtocken(user._id)
+     //NEW REF TOKEN GENERATED HERE AND DESTRUCT 
+ 
+     const option = {
+     httpOnly:true,
+     secure:false
+    }
+ 
+     return res.status(200)
+     .cookie("RefreshToken",newRefreshTocken,option)
+     .cookie("AccesToken",AccesTocken,option)
+     .json(
+         new apiResponse(
+             200,
+             {AccesTocken,newRefreshTocken},
+             "Acess token refreshed"
+         )
+     )
+   } catch (error) {
+    throw new apierror(401 , error?.message,"newACESStoken error")
+   }
+
+})
+
+
+export {registerUser,loginUser,Userlogout,newAccestoken}
