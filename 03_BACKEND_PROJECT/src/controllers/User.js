@@ -264,5 +264,136 @@ const newAccestoken = asyncyHandler(async(req,res)=>{
 
 })
 
+const changeCurrentPassword = asyncyHandler(async(req,res)=>{
+    const {oldPasword , newPassword} = req.body
 
-export {registerUser,loginUser,Userlogout,newAccestoken}
+    const user = User.findById(req.user?._id)
+
+    const isOldPasswordcorect = user.isPasswordcorrect(oldPasword)
+
+    if (!isOldPasswordcorect) {
+        throw new apierror(400,"OLD PASSWORD IS NOT CORRECT")
+
+    }
+
+    user.password = newPassword 
+    await user.save({validateBeforeSave:false})
+
+    return res.status(200)
+    .json(
+         new apiResponse (200,{},"PASSWORD RESET SUCCESSFULLY")
+    )
+
+})
+
+const getCurrentUser = asyncyHandler(async(req,res)=>{
+
+    return res.status(200)
+    .json( 
+        new apiResponse(200,req.user,"CURRENT USER FETCHED SUCESSFULLY")
+     )
+})
+
+
+const updateAccountdetails = asyncyHandler(async (req,res)=>{
+
+    const {Fullname , Email } = req.body
+
+    if (!Fullname || ! Email ) {
+        throw new apierror(400 , " EMAIL and FULLNAMES are rqired")
+    }
+
+    const user = User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                Fullname:Fullname,
+                Email:Email
+            }
+        },
+        {new:true}
+    
+    ).select("-password ")
+
+    return res.status(200)
+    .json(new apiResponse(200,user,"ACCOUNT DETAILS UPDATED SUCESSFULLY"))
+
+})
+
+const avatarUpdate = asyncyHandler(async(req , res )=>{
+
+    const avatarlocalPath = req.file?.path
+
+    if (!avatarlocalPath) {
+        
+        throw new apierror(400 , "AVATAR file is missig")
+    }
+
+    const avatar = await UploadFile(avatarlocalPath)
+
+    if (!avatar.url) {
+        throw new apierror(400,"ERROR WHILE UPLOADING")
+    }
+
+   const user = User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+
+                avatar:avatar.url
+            }
+        },
+        {
+            new:true
+        }
+    ).select("-password")
+
+    return res.status(200)
+    .json( new apiResponse( 200 , user , "VATAR UPDATED SUCESS FULLY" ))
+})
+
+
+const coverimageUpdate = asyncyHandler(async(req , res )=>{
+
+    const coverimagelocalPath = req.file?.path
+
+    if (!coverimagelocalPath) {
+        
+        throw new apierror(400 , " coverimage file is missig")
+    }
+
+    const coverimage = await UploadFile(coverimagelocalPath)
+
+    if (!coverimage.url) {
+        throw new apierror(400,"ERROR WHILE UPLOADING")
+    }
+
+   const user = User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+
+                coverimage:coverimage.url
+            }
+        },
+        {
+            new:true
+        }
+    ).select("-password")
+
+    return res.status(200)
+    .json( new apiResponse( 200 , user , "COVERIMAGE UPDATED SUCESS FULLY" ))
+})
+
+
+export {
+    registerUser,
+    loginUser,
+    Userlogout,
+    newAccestoken ,
+    changeCurrentPassword,
+    getCurrentUser ,
+    updateAccountdetails,
+    avatarUpdate,
+    coverimageUpdate
+}
