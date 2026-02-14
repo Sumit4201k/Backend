@@ -122,10 +122,6 @@ const registerUser = asyncyHandler(async (req,res)=>{
 
 //LOGIN
 
-
-   
-
-
 const loginUser=asyncyHandler(async (req,res)=>{
 //get a req- body
 //validate that response
