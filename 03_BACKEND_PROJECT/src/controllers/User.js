@@ -385,6 +385,88 @@ const coverimageUpdate = asyncyHandler(async(req , res )=>{
     .json( new apiResponse( 200 , user , "COVERIMAGE UPDATED SUCESS FULLY" ))
 })
 
+const getUserChannelProfile =  asyncyHandler(async ( req , res) =>{
+
+   const {username} = req.params
+
+   if (!username?.trim()) {
+        throw new apierror(400, "USERNAME is not in params")
+   }
+
+   const channel = await User.aggregate([
+    {
+        $match: {
+
+           username: username?.toLowerCase()// we got a single document here we need to look up in basis of this doc
+
+        } 
+    },
+    {
+        $lookup:{
+            from:"subscriptions",//we gonna get value from this document
+            localField:"_id",//
+            foreignField:"channel",//
+            as:"subscribers"// we got subscribers from here matchig channels
+        }
+    },
+    {
+        $lookup:{
+            from:"subscriptions",//
+            localField:"_id",//
+            foreignField:"subscriber",//
+            as:"subscribedTo"// got how many channle user subscribed by matching the user(subscriber in chanles)
+        }
+    },
+    {
+        $addFields:{                //added new feilds here
+            subscribersCount:{
+                $size:"$subscribers"// calculated subscribers by matching obj we got wth same channle
+            },
+            subscribedToCount:{
+                $size:"$subscribedTo"// by matching user we got in each channle
+            },
+            isSubscribed:{
+                $cond:{ /* we need to check if i am in the document called subscribers */
+                    if:{$in: [req.user?._id , "$subscribers.subscribers"]},
+                    then:true,
+                    else:false
+                    /* IN:checks if we are in the document both in array and obj
+                REQ.USER:if u are logged in u have req user and can get the id from it
+                "$ . ":-in sebscriber feild go in subscriber obj (in sub model) and check
+                IF REQ.user if is in it */
+                }
+            }
+        }
+    },
+    {
+        $project:{
+            Fullname:1,
+            username:1,
+            subscribersCount:1,
+            subscribedToCount:1,
+            isSubscribed:1,
+            avatar:1,
+            coverimage:1,
+            Email:1
+
+        }
+    }
+   ])
+
+   if (!channel?.length) {
+    throw new apierror(400,"channle does not exist")
+   } 
+
+   console.log("THE DATA OF CHANNLE:  ",channel);
+   
+   return res
+   .status(200)
+   .json(
+    new apiResponse(200 ,channel[0],"User channle found")
+   )
+
+})
+
 
 export {
     registerUser,
@@ -395,5 +477,6 @@ export {
     getCurrentUser ,
     updateAccountdetails,
     avatarUpdate,
-    coverimageUpdate
+    coverimageUpdate,
+    getUserChannelProfile
 }
