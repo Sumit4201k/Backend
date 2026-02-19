@@ -30,6 +30,20 @@ const UploadFile =async (Localfile) => {
      }
 }
 
-export {UploadFile}
+// const DeleteFile = async (publicId) => {
+//     try {
+
+//         const result = await cloudinary.uploader.destroy(publicId)
+
+//         return result
+
+//     } catch (error) {
+//         console.log("Error deleting file:", error)
+//         return null
+//     }
+// }
+
+// export {UploadFile , DeleteFile
+// }
 
 

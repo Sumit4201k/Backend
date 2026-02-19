@@ -1,5 +1,17 @@
 import { Router } from "express";
-import { registerUser, loginUser, Userlogout, newAccestoken } from "../controllers/User.js";
+import { 
+    registerUser,
+    loginUser,
+    Userlogout, 
+    newAccestoken, 
+    changeCurrentPassword, 
+    getCurrentUser, 
+    updateAccountdetails, 
+    avatarUpdate, 
+    coverimageUpdate, 
+    getUserChannelProfile,
+    watchHistoryofuser
+} from "../controllers/User.js";
 import { Upload } from "../middleware/multer.js";
 import { varifyJwt } from "../middleware/auth.js";
 
@@ -30,6 +42,12 @@ router.route("/login").post(loginUser)
 //secured routes(works whn user is logged in)
 router.route("/logout").post(varifyJwt ,Userlogout)
 router.route("/new-acesstoken").post(newAccestoken)
-
+router.route("/changeCurrentPassword").post(varifyJwt,changeCurrentPassword)
+router.route("/getCurrentUser").get(varifyJwt,getCurrentUser)
+router.route("/updateAccountdetails").patch(varifyJwt,updateAccountdetails) // patch cuz it gonna change the part of he data not whole data
+router.route("/avatarUpdate").patch(varifyJwt,Upload.single("avatar"),avatarUpdate)
+router.route("/coverimageUpdate").patch(varifyJwt,Upload.single("coverImage"),coverimageUpdate)
+router.route("/:username").get(varifyJwt,getUserChannelProfile)
+router.route("/watchistory").get(varifyJwt,watchHistoryofuser)
 
 export default router

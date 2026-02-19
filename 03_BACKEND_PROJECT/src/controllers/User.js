@@ -1,7 +1,7 @@
 import { asyncyHandler } from "../utils/asyncHandler.js";
 import {apierror} from "../utils/apierror.js"
 import {User} from '../models/user.model.js'
-import {UploadFile} from '../utils/cloudinary.js'
+import {DeleteFile, UploadFile} from '../utils/cloudinary.js'
 import {apiResponse} from '../utils/apiResponse.js'
 import jwt  from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -358,6 +358,29 @@ const coverimageUpdate = asyncyHandler(async(req , res )=>{
         
         throw new apierror(400 , " coverimage file is missig")
     }
+ 
+    // const existingUser =  await User.findById(req.user._id)
+
+    
+    // if (!existingUser.coverimage) {
+        
+        
+
+    //     const coverImageUrl= existingUser.coverimage
+
+    //     const destroyOldCoverImage = coverImageUrl.split("/").pop().split(".")[0]
+
+    //     await DeleteFile(destroyOldCoverImage)
+
+//const oldImageUrl = "https://res.cloudinary.com/demo/image/upload/v1690000000/users/coverimage_abc123.jpg"
+
+
+    //} 
+    
+    else {
+        throw new apierror(400 , " existingUser file is missig") 
+    }
+
 
     const coverimage = await UploadFile(coverimagelocalPath)
 
