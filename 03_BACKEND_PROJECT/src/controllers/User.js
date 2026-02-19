@@ -4,6 +4,7 @@ import {User} from '../models/user.model.js'
 import {UploadFile} from '../utils/cloudinary.js'
 import {apiResponse} from '../utils/apiResponse.js'
 import jwt  from "jsonwebtoken";
+import mongoose from "mongoose";
 
 
 const generateAccestockenandRefreshtocken= async(userId)=>{
@@ -463,6 +464,61 @@ const getUserChannelProfile =  asyncyHandler(async ( req , res) =>{
 
 })
 
+ const watchHistoryofuser = asyncyHandler(async (req , res) =>{
+
+    const user = User.aggregate([
+     { 
+            $match:{
+            _id: new mongoose.Types.ObjectId(req.user._id)
+                   }
+     },
+     {
+        $lookup:{                         //imp note:look up will give you array and the first elemnt is data
+            from:"videos",
+            localField:"watchHistory",
+            foreignField:"_id",
+            as:"watchHistory",
+            pipeline:[
+                {
+                    $lookup:{
+                        from:"users",
+                        localField:"owner",
+                        foreignField:"_id",
+                        as:"owner",
+                        pipeline:[
+                            {
+                                $project:{
+                                    Fullname:1,
+                                    username:1,
+                                    avatar:1,
+                                   
+
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    $addFields:{
+                        owner:{
+                            $first: "$owner"
+                        }
+                    }
+                    
+                }
+            ]
+
+        }
+     }
+    
+    ])
+
+
+return res.status(200)
+.json(200,user[0].watchHistory,"watchhistory fetched sucess fully")
+
+
+ })
 
 export {
     registerUser,
@@ -474,5 +530,6 @@ export {
     updateAccountdetails,
     avatarUpdate,
     coverimageUpdate,
-    getUserChannelProfile
+    getUserChannelProfile,
+    watchHistoryofuser
 }
