@@ -188,8 +188,8 @@ const Userlogout = asyncyHandler( async (req,res) => {
       
     await User.findByIdAndUpdate(req.user._id,
         {
-            $set:{
-                RefreshTocken:undefined
+            $unset:{
+                RefreshTocken:1
 
             }
         },

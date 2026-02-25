@@ -30,6 +30,29 @@ const UploadFile =async (Localfile) => {
      }
 }
 
+
+const Uploadvideo =async (Localfile) => {
+   
+     try {
+        if (!Localfile) return null
+        
+       const videoCLoudupload=await cloudinary.uploader.upload(Localfile,{
+            resource_type:"video"
+        })
+        //clodinary is used here
+        console.log("video uploaded scsfuly ",CLoudupload.url);
+        console.log("CLODINERY RES:  ",CLoudupload);
+        
+        fs.unlinkSync(Localfile)
+        return videoCLoudupload
+     } catch (error) {
+        fs.unlinkSync(Localfile)//remove locally uploaded file 
+     }
+}
+
+
+
+
 // const DeleteFile = async (publicId) => {
 //     try {
 
