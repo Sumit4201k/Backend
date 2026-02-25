@@ -7,4 +7,4 @@ const router = Router()
 
 router.route("/subscribe/:channelname").post(varifyJwt,subscriber)
 
-export {router}
+export default router

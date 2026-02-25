@@ -40,8 +40,8 @@ const Uploadvideo =async (Localfile) => {
             resource_type:"video"
         })
         //clodinary is used here
-        console.log("video uploaded scsfuly ",CLoudupload.url);
-        console.log("CLODINERY RES:  ",CLoudupload);
+        console.log("video uploaded scsfuly ",videoCLoudupload.url);
+        console.log("CLODINERY RES:  ",videoCLoudupload);
         
         fs.unlinkSync(Localfile)
         return videoCLoudupload
@@ -66,7 +66,6 @@ const Uploadvideo =async (Localfile) => {
 //     }
 // }
 
-// export {UploadFile , DeleteFile
-// }
+export {UploadFile , Uploadvideo}
 
 

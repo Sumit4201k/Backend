@@ -1,8 +1,8 @@
-import { subscription } from "../models/subscriber.model";
-import { User } from "../models/user.model";
-import { apierror } from "../utils/apierror";
-import { apiResponse } from "../utils/apiResponse";
-import { asyncyHandler } from "../utils/asyncHandler";
+import { subscription } from "../models/subscriber.model.js";
+import { User } from "../models/user.model.js";
+import { apierror } from "../utils/apierror.js";
+import { apiResponse } from "../utils/apiResponse.js";
+import { asyncyHandler } from "../utils/asyncHandler.js";
 
 const subscriber = asyncyHandler(async(req , res)=>{
 
@@ -59,7 +59,8 @@ const unsubscribe = asyncyHandler(async(req , res)=>{
         }
     )
     
-    
+     return res.status(200)
+    .json( new apiResponse(200,subscriberData,"subcribption model make sucess fully"))
 })
 
 return res.status(200)
