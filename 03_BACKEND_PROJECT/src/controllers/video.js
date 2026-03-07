@@ -50,7 +50,7 @@ const publishVideo = asyncyHandler(async (req, res) => {
     });
 
     // create video document in DB
-    const video = await video.create({
+    const videos = await video.create({
 
         videoFile: videoUrl,
         thumbnail: thumbnail,
@@ -65,7 +65,7 @@ const publishVideo = asyncyHandler(async (req, res) => {
     return res.status(201).json(
         new apiResponse(
             201,
-            video,
+            videos,
             "Video published successfully"
         )
     );
