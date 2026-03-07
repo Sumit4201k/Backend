@@ -35,7 +35,7 @@ const subscriber = asyncyHandler(async(req , res)=>{
 })
 
 
-const unsubscribe = asyncyHandler(async(req , res)=>{
+const unsubscribe = asyncyHandler(async(req,res)=>{
 
     const Channel = req.params.username
 
@@ -59,12 +59,11 @@ const unsubscribe = asyncyHandler(async(req , res)=>{
         }
     )
     
-     return res.status(200)
-    .json( new apiResponse(200,subscriberData,"subcribption model make sucess fully"))
+    return res.status(200)
+      .json(new apiResponse(200,userUnsubscribing,"unsubscribed sucess fully"))
+
 })
 
-return res.status(200)
-.json(new apiResponse(200,userUnsubscribing,"unsubscribed sucess fully"))
 
 export {
 

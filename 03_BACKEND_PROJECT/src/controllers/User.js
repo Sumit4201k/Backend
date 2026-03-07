@@ -1,7 +1,7 @@
 import { asyncyHandler } from "../utils/asyncHandler.js";
 import {apierror} from "../utils/apierror.js"
 import {User} from '../models/user.model.js'
-import {DeleteFile, UploadFile} from '../utils/cloudinary.js'
+import { UploadFile} from '../utils/cloudinary.js'
 import {apiResponse} from '../utils/apiResponse.js'
 import jwt  from "jsonwebtoken";
 import mongoose from "mongoose";

@@ -29,7 +29,7 @@ app.use("/api/v2/users",UserRouter)
 app.use("api/v2/subscribers", SubscriberRouter)
 app.use("api/v2/video", videoRouter)
 
-export default router
+export default app
 
 
 

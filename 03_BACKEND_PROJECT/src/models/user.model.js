@@ -83,7 +83,7 @@ userschema.methods.generateRefreshtoken= function(){
     },process.env.REFRESH_TOKEN,
 {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-})
+            })
 }
 // userschema.plugin(mongooseAggregate)
 

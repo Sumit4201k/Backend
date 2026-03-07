@@ -4,7 +4,7 @@
 
 import Dotenv from 'dotenv'
 import { conncectDB } from "./db/index.js";
-import { app } from './app.js';
+import  app  from './app.js';
 
 Dotenv.config(
     {

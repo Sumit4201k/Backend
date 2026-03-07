@@ -1,6 +1,6 @@
 import {  Router } from "express";
-import { varifyJwt } from "../middleware/auth";
-import { subscriber } from "../controllers/subscriber";
+import { varifyJwt } from "../middleware/auth.js";
+import { subscriber } from "../controllers/subscriber.js";
 
 const router = Router()
 
